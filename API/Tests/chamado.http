@@ -8,3 +8,12 @@ Content-Type: application/json
 {
     "descricao": "Trocar memórias"
 }
+
+### Alterar uma tarefa
+PATCH http://localhost:5000/chamado/alterar/2f1b7dc1-3b9a-4e1a-a389-7f5d2f1c8f3e
+Content-Type: application/json
+
+{
+    "status" : "Aberto"
+}
+

@@ -7,10 +7,10 @@ builder.Services.AddDbContext<AppDataContext>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "COLOQUE O SEU NOME");
+app.MapGet("/", () => "Chamados");
 
 //ENDPOINTS DE TAREFA
-//GET: http://localhost:5273/api/chamado/listar
+//GET: http://localhost:5000/api/chamado/listar
 app.MapGet("/api/chamado/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Chamados.Any())
@@ -20,7 +20,7 @@ app.MapGet("/api/chamado/listar", ([FromServices] AppDataContext ctx) =>
     return Results.NotFound("Nenhum chamado encontrada");
 });
 
-//POST: http://localhost:5273/api/chamado/cadastrar
+//POST: http://localhost:5000/api/chamado/cadastrar
 app.MapPost("/api/chamado/cadastrar", ([FromServices] AppDataContext ctx, [FromBody] Chamado chamado) =>
 {
     ctx.Chamados.Add(chamado);
@@ -28,22 +28,34 @@ app.MapPost("/api/chamado/cadastrar", ([FromServices] AppDataContext ctx, [FromB
     return Results.Created("", chamado);
 });
 
-//PUT: http://localhost:5273/chamado/alterar/{id}
-app.MapPut("/api/chamado/alterar/{id}", ([FromServices] AppDataContext ctx, [FromRoute] string id) =>
+//PATCH: http://localhost:5000/chamado/alterar/{id}
+app.MapPatch("/api/chamado/alterar/{id}", 
+([FromServices] AppDataContext ctx, [FromRoute] string id, [FromBody] Chamado alterarChamado) =>
 {
-    //Implementar a alteração do status do chamado
+    Chamado? Resultado = ctx.Chamados.Find(id);
+
+    if (Resultado == null)
+    {
+        return Results.NotFound("Chamado não encontrado!");
+    }
+
+    Resultado.Status = alterarChamado.Status;
+    ctx.Chamados.Update(Resultado);
+    ctx.SaveChanges();
+    return Results.Ok(Resultado);
 });
 
-//GET: http://localhost:5273/chamado/naoconcluidas
+//GET: http://localhost:5000/chamado/naoconcluidas
 app.MapGet("/api/chamado/naoresolvidos", ([FromServices] AppDataContext ctx) =>
 {
-    //Implementar a listagem dos chamados não resolvidos
+    
 });
 
-//GET: http://localhost:5273/chamado/concluidas
+//GET: http://localhost:5000/chamado/concluidas
 app.MapGet("/api/chamado/resolvidos", ([FromServices] AppDataContext ctx) =>
 {
-    //Implementar a listagem dos chamados resolvidos
+
 });
+
 
 app.Run();
